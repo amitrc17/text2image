@@ -1,7 +1,12 @@
 # text2image
-Image generation from text descriptions using Deep Convolutional Generative Adversarial Networks (DC-GANs)
+Image generation from text descriptions using Deep Convolutional Generative Adversarial Networks (DC-GANs).
 
-We use a modified version of the DC-GAN in [1]. We add conditioning to the DC-GAN in the form of a sentence embedding of the input text description. In our experiments, we used skip-thought-vectors [2] to generate these sentence embeddings. We also used a class-loss term to modify the loss of the discriminator which penalizes the discriminator if it is unable to identify the sample to be fake given an image from the true data but paired with a text description that does not match that image. This helps the discriminator use the conditioning information properly and check if the generated images are aligned with the text description or not. This model is called the DC-GAN-CLS [3].
+We modify the baseline DC-GAN implementation for our experiments. All our code uses tensorflow.
+- Baseline DC-GAN code is from - https://github.com/carpedm20/DCGAN-tensorflow 
+- Skip-thought-vector Code is from - https://github.com/tensorflow/models/tree/master/research/im2txt
+- Pycocotools  is from - https://github.com/cocodataset/cocoapi/tree/master/PythonAPI
+
+We use a modified version of the DC-GAN given in [1]. We add conditioning to the DC-GAN in the form of a sentence embedding of the input text description. In our experiments, we used skip-thought-vectors [2] to generate these sentence embeddings. We also used a class-loss term to modify the loss of the discriminator which penalizes the discriminator if it is unable to identify the sample to be fake given an image from the true data but paired with a text description that does not match that image. This helps the discriminator use the conditioning information properly and check if the generated images are aligned with the text description or not. This model is called the DC-GAN-CLS [3].
 
 The architecture we used.
 ![Alt Text](assets/ganfinal.png)
@@ -25,8 +30,8 @@ Some tips
 
 ## References
 
-* A. Radford, L. Metz, and S. Chintala. Unsupervised representation learning with deep convolutional generative adversarial networks. arXiv preprint arXiv:1511.06434, 2015.
+1. A. Radford, L. Metz, and S. Chintala. Unsupervised representation learning with deep convolutional generative adversarial networks. arXiv preprint arXiv:1511.06434, 2015.
 
-* R. Kiros, Y. Zhu, R. R. Salakhutdinov, R. Zemel, R. Urtasun, A. Torralba, and S. Fidler. Skip-thought vectors. In Advances in neural information processing systems, pages 3294–3302, 2015.
+2. R. Kiros, Y. Zhu, R. R. Salakhutdinov, R. Zemel, R. Urtasun, A. Torralba, and S. Fidler. Skip-thought vectors. In Advances in neural information processing systems, pages 3294–3302, 2015.
 
-* S. Reed, Z. Akata, X. Yan, L. Logeswaran, B. Schiele, and H. Lee. Generative adversarial text to image synthesis. arXiv preprint arXiv:1605.05396, 2016.
+3. S. Reed, Z. Akata, X. Yan, L. Logeswaran, B. Schiele, and H. Lee. Generative adversarial text to image synthesis. arXiv preprint arXiv:1605.05396, 2016.
