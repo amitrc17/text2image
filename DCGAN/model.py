@@ -78,10 +78,6 @@ class DCGAN(object):
     if 'cond' in self.dataset_name:
         #self.data = np.load('bird_mappings.npy')
 #        self.data = np.load('new_mapping.npy')
-#        x = np.array([x[0] for x in self.data])
-#        compressor = PCA(n_components=128)
-#        compressor.fit(x)
-#        x_ = compressor.transform(x)
 #        self.data = np.array([(x_[i], self.data[i][1]) for i in range(len(self.data))])
         self.data = np.load('new_new_mapping.npy')
         #self.data = np.load('bird_mappings_big.npy')
@@ -94,14 +90,6 @@ class DCGAN(object):
       #self.data = np.load('bird_mappings.npy')#glob(os.path.join("../coco/train2014/", self.input_fname_pattern))
       #glob(os.path.join("../celebA/img_align_celeba/", self.input_fname_pattern))
       self.data = np.array([x[1] for x in self.data])
-      #imreadImg = imread(self.data[0])
-      #if len(imreadImg.shape) >= 3: #check if image is a non-grayscale image by checking channel number
-      #  self.c_dim = imread(self.data[0]).shape[-1]
-      #else:
-      #  self.c_dim = 1
-      #scores = sd.cdist([self.data[0][0]],[x[0] for x in self.data], 'cosine')[0]
-      #sidx = np.argsort(scores)
-      #self.data = self.data[sidx[:10000]]
       self.c_dim = 3
 
     self.grayscale = (self.c_dim == 1)
@@ -220,15 +208,14 @@ class DCGAN(object):
                     coco=coco) for img_id in true_img_ids}
     #print('Saving Stuff, brace yourself..')
     #np.save('vehicle_imgs.npy', all_imgs)
-    #print('Saved the stuff, exit now dude!.....')
-    #time.sleep(10)
     true_img_ids = {x:1 for x in true_img_ids}
     if 'cond' in self.dataset_name:
         self.data = self.data[[(self.data[i][1] in true_img_ids) for i in range(len(self.data))]]
         self.data = np.array([(self.data[i][0], all_imgs[self.data[i][1]]) for i in range(len(self.data))])
     else:
         self.data = self.data[[(self.data[i] in true_img_ids) for i in range(len(self.data))]]
-    print('Preprocessing Complete. Testing ...')
+#    Testing Loaded Data for correctness
+#    print('Preprocessing Complete. Testing ...')
 #    if 'cond' in self.dataset_name:  
 #        imgIds = [x[1] for x in self.data]
 #        imgEnc = [x[0] for x in self.data]
@@ -240,14 +227,6 @@ class DCGAN(object):
 #            for j in range(10):
 #                print(imgIds[sorted_ids[j]])
     
-    #catIdList = coco.getCatIds(catNms=['car', 'bus', 'airplane', 'truck'])
-    #imgIds = []
-    #for i in range(len(catIdList)):
-    #    imgIds.extend(coco.getImgIds(catIds=catIdList[i]))
-    #imgIds = {x:1 for x in imgIds}
-    #self.data = self.data[[(self.data[i][1] in imgIds) for i in range(len(self.data))]]
-#    for i in range(len(self.data)):
-#        print('An image id - ', self.data[i][1])
     if 'cond' in config.dataset:
         self.data_X, self.data_y = np.array([x[1] for x in self.data]),np.array([y[0] for y in self.data],dtype=np.float32)
     
@@ -341,11 +320,12 @@ class DCGAN(object):
             })
           self.writer.add_summary(summary_str, counter)
 
-          # Run g_optim twice to make sure that d_loss does not go to zero (different from paper)
+          # Run g_optim twice to make sure that d_loss does not go to zero 
           _, summary_str = self.sess.run([g_optim, self.g_sum],
             feed_dict={ self.inputs: batch_images, self.z: batch_z, self.y:batch_labels, self.y_shuffle: batch_shuffle })
           self.writer.add_summary(summary_str, counter)
           
+#         Let's go for 3
 #          _, summary_str = self.sess.run([g_optim, self.g_sum],
 #            feed_dict={ self.inputs: batch_images, self.z: batch_z, self.y:batch_labels, self.y_shuffle: batch_shuffle })
 #          self.writer.add_summary(summary_str, counter)
@@ -444,26 +424,6 @@ class DCGAN(object):
 
         return tf.nn.sigmoid(h4), h4
       else:
-#        yb = tf.reshape(y, [self.batch_size, 1, 1, self.y_dim])
-#        x = image
-#        #x = conv_cond_concat(image, yb)
-#
-#        h0 = lrelu(conv2d(x, self.c_dim + self.y_dim, name='d_h0_conv'))
-#        #h0 = conv_cond_concat(h0, yb)
-#
-#        h1 = lrelu(self.d_bn1(conv2d(h0, self.df_dim + self.y_dim, name='d_h1_conv')))
-#        h1 = tf.reshape(h1, [self.batch_size, -1])      
-#        h1 = concat([h1, y], 1)
-#        
-#        h2 = lrelu(self.d_bn2(linear(h1, self.dfc_dim, 'd_h2_lin')))
-#        #h2 = concat([h2, y], 1)
-#
-#        h3 = linear(h2, 1, 'd_h3_lin')
-#        
-#        return tf.nn.sigmoid(h3), h3
-#        yb = tf.reshape(y, [self.batch_size, 1, 1, self.y_dim])
-#        x = image
-#        x = conv_cond_concat(image, yb)
         h0 = lrelu(conv2d(image, self.df_dim, name='d_h0_conv'))
         h1 = lrelu(self.d_bn1(conv2d(h0, self.df_dim*2, name='d_h1_conv')))
         #e1 = lrelu(self.d_bne(linear(y, self.df_dim*4, 'd_e1_lin')))
@@ -512,30 +472,6 @@ class DCGAN(object):
 
         return tf.nn.tanh(h4)
       else:
-#        s_h, s_w = self.output_height, self.output_width
-#        s_h2, s_h4 = int(s_h/2), int(s_h/4)
-#        s_w2, s_w4 = int(s_w/2), int(s_w/4)
-#
-#        # yb = tf.expand_dims(tf.expand_dims(y, 1),2)
-#        yb = tf.reshape(y, [self.batch_size, 1, 1, self.y_dim])
-#        z = concat([z, y], 1)
-#
-#        h0 = tf.nn.relu(
-#            self.g_bn0(linear(z, self.gfc_dim, 'g_h0_lin')))
-#        #h0 = concat([h0, y], 1)
-#
-#        h1 = tf.nn.relu(self.g_bn1(
-#            linear(h0, self.gf_dim*2*s_h4*s_w4, 'g_h1_lin')))
-#        h1 = tf.reshape(h1, [self.batch_size, s_h4, s_w4, self.gf_dim * 2])
-#
-#        #h1 = conv_cond_concat(h1, yb)
-#
-#        h2 = tf.nn.relu(self.g_bn2(deconv2d(h1,
-#            [self.batch_size, s_h2, s_w2, self.gf_dim * 2], name='g_h2')))
-#        #h2 = conv_cond_concat(h2, yb)
-#
-#        return tf.nn.sigmoid(
-#            deconv2d(h2, [self.batch_size, s_h, s_w, self.c_dim], name='g_h3'))
         s_h, s_w = self.output_height, self.output_width
         s_h2, s_w2 = conv_out_size_same(s_h, 2), conv_out_size_same(s_w, 2)
         s_h4, s_w4 = conv_out_size_same(s_h2, 2), conv_out_size_same(s_w2, 2)
@@ -599,27 +535,6 @@ class DCGAN(object):
 
         return tf.nn.tanh(h4)
       else:
-#        s_h, s_w = self.output_height, self.output_width
-#        s_h2, s_h4 = int(s_h/2), int(s_h/4)
-#        s_w2, s_w4 = int(s_w/2), int(s_w/4)
-#
-#        # yb = tf.reshape(y, [-1, 1, 1, self.y_dim])
-#        yb = tf.reshape(y, [self.batch_size, 1, 1, self.y_dim])
-#        z = concat([z, y], 1)
-#
-#        h0 = tf.nn.relu(self.g_bn0(linear(z, self.gfc_dim, 'g_h0_lin'), train=False))
-#        #h0 = concat([h0, y], 1)
-#
-#        h1 = tf.nn.relu(self.g_bn1(
-#            linear(h0, self.gf_dim*2*s_h4*s_w4, 'g_h1_lin'), train=False))
-#        h1 = tf.reshape(h1, [self.batch_size, s_h4, s_w4, self.gf_dim * 2])
-#        #h1 = conv_cond_concat(h1, yb)
-#
-#        h2 = tf.nn.relu(self.g_bn2(
-#            deconv2d(h1, [self.batch_size, s_h2, s_w2, self.gf_dim * 2], name='g_h2'), train=False))
-#        #h2 = conv_cond_concat(h2, yb)
-#
-#        return tf.nn.sigmoid(deconv2d(h2, [self.batch_size, s_h, s_w, self.c_dim], name='g_h3'))
         s_h, s_w = self.output_height, self.output_width
         s_h2, s_w2 = conv_out_size_same(s_h, 2), conv_out_size_same(s_w, 2)
         s_h4, s_w4 = conv_out_size_same(s_h2, 2), conv_out_size_same(s_w2, 2)

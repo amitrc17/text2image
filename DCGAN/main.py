@@ -47,11 +47,7 @@ def main(_):
   if not os.path.exists(FLAGS.sample_dir):
     os.makedirs(FLAGS.sample_dir)
 
-  #gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
   run_config = tf.ConfigProto()
-  #device_count={
-#          'GPU': 0
-#          })
   run_config.gpu_options.allow_growth=True
 
   with tf.Session(config=run_config) as sess:
@@ -94,15 +90,6 @@ def main(_):
     else:
       if not dcgan.load(FLAGS.checkpoint_dir)[0]:
         raise Exception("[!] Train a model first, then run test mode")
-#      data = np.load('new_mapping.npy')
-#      x = np.array([x[0] for x in data])
-#      compressor = PCA(n_components=128)
-#      compressor.fit(x)
-#      x_ = compressor.transform(x)
-#      data = np.array([(x_[i], data[i][1]) for i in range(len(data))])
-#      np.save('new_new_mapping.npy', data)
-      #data = np.load('new_new_mapping.npy') 
-      #data = np.load('bird_mappings_big.npy')
       data = np.load('bird_mappings.npy')
 #      coco = COCO('../coco/annotations/captions_train2014.json')
 #      print('Preprocessing COCO data...')
@@ -133,14 +120,6 @@ def main(_):
       #data = np.array([(data[i][0], [data[i][1]]) for i in range(len(data))])
       b_size = 64
       tot = 20000
-#      birds_gt = [get_image(x[1],
-#                    input_height=dcgan.input_height,
-#                    input_width=dcgan.input_width,
-#                    resize_height=dcgan.output_height,
-#                    resize_width=dcgan.output_width,
-#                    crop=dcgan.crop,
-#                    grayscale=dcgan.grayscale,
-#                    coco=None) for x in data]
       print(data.shape)
       ret = np.empty((0, 64, 64, 3), dtype=np.float32)
       #ret = np.array(birds_gt)
@@ -161,17 +140,6 @@ def main(_):
     print(ret.shape)
     ret = (ret+1.)/2
     np.save('imgs_cond_CUB_bird.npy', ret)
-      
-
-    # to_json("./web/js/layers.js", [dcgan.h0_w, dcgan.h0_b, dcgan.g_bn0],
-    #                 [dcgan.h1_w, dcgan.h1_b, dcgan.g_bn1],
-    #                 [dcgan.h2_w, dcgan.h2_b, dcgan.g_bn2],
-    #                 [dcgan.h3_w, dcgan.h3_b, dcgan.g_bn3],
-    #                 [dcgan.h4_w, dcgan.h4_b, None])
-
-    # Below is codes for visualization
-    #OPTION = 1
-    #visualize(sess, dcgan, FLAGS, OPTION)
 
 if __name__ == '__main__':
   tf.app.run()
