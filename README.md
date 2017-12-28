@@ -1,7 +1,8 @@
-# text2image
+# text2image-tensorflow
 Image generation from text descriptions using Deep Convolutional Generative Adversarial Networks (DC-GANs).
 
-We modify the baseline DC-GAN implementation for our experiments. All our code uses tensorflow.
+We modify the baseline DC-GAN implementation for our experiments. All our code uses **Python 3** and **TensorFlow**.
+We also needed **scikit-learn**, **NumPy** and **SciPy**.
 - Baseline DC-GAN code is from - https://github.com/carpedm20/DCGAN-tensorflow 
 - Skip-thought-vector Code is from - https://github.com/tensorflow/models/tree/master/research/im2txt
 - Pycocotools  is from - https://github.com/cocodataset/cocoapi/tree/master/PythonAPI
